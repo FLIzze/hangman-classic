@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"bufio"
 	"os"
 	"time"
 )
@@ -16,11 +17,30 @@ type HangManData struct {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	hangmandata := HangManData{}
 
 	hangmandata.ToFind = chooseWord();
 	hangmandata.Word = createWord(hangmandata.ToFind);
 	hangmandata.Attempts = 0
+
+	fmt.Println("Good Luck, you have 10 attempts.")
+	for {
+		var goodLetter bool
+		hangmandata.Word, goodLetter = checkLetter(askLetter(hangmandata.Word), hangmandata.Word, hangmandata.ToFind)
+		if !goodLetter {
+			hangmandata.Attempts++
+		}
+		if hangmandata.Word == hangmandata.ToFind {
+			break
+		}
+		if hangmandata.Attempts >= 10 {
+			loose()
+		}
+	}
+	fmt.Println("The word was " + hangmandata.ToFind)
+	win()
 }
 
 func chooseWord() string { // Function to select word needed to find in a special file
@@ -44,7 +64,6 @@ func chooseWord() string { // Function to select word needed to find in a specia
 			word = word + string(i)
 		}
 	}
-	rand.Seed(time.Now().UTC().UnixNano())
 	return words[rand.Intn(len(words))]
 }
 
@@ -93,10 +112,50 @@ func createWord(word string) string { // Function to create the word we display
 	return word
 }
 
-func printWord(word string) string {
-
+func askLetter(word string) string {
+	reader := bufio.NewReader(os.Stdin)
+	for _, j := range word {
+		fmt.Print(string(j) + " ")
+	}
+	fmt.Println("\n")
+	fmt.Print("Choose: ")
+	letter, _ := reader.ReadString('\n')
+	for {
+		if len(letter) != 3 {
+			fmt.Println("You need to choose a letter, not a word")
+			fmt.Print("Choose: ")
+			letter, _ = reader.ReadString('\n')
+		} else {
+			break
+		}
+	}
+	return letter
 }
 
-// func checkLetter() bool {
+func checkLetter(letter string, word string, tofind string)(string, bool) {
+	var newWord string
+	var goodLetter bool
 
-// }
+	for i, j := range word {
+		if string(tofind[i]) == string(letter[0]) && string(j) != letter {
+			newWord += string(letter[0])
+			goodLetter = true
+		} else {
+			newWord += string(j)
+		}
+	}
+	return newWord, goodLetter
+}
+
+func win() {
+	fmt.Println("\n-------------------------------")
+	fmt.Println("            YOU WIN            ")
+	fmt.Println("-------------------------------\n")
+}
+
+func loose() {
+	fmt.Println("\n-------------------------------")
+	fmt.Println("           YOU LOOSE           ")
+	fmt.Println("-------------------------------\n")
+	os.Exit(0)
+}
