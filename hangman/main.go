@@ -13,34 +13,42 @@ type HangManData struct {
 	Word             string // Word composed of '_', ex: H_ll_
 	ToFind           string // Final word chosen by the program at the beginning. It is the word to find
 	Attempts         int // Number of attempts left
-	HangmanPositions [10]string // It can be the array where the positions parsed in "hangman.txt" are stored
+	CountMin    	 int
+	CountMax    	 int
+	UsedLetters 	 [10]string
 }
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	hangmandata := HangManData{}
+	hangmandata := &HangManData{}
 
 	hangmandata.ToFind = chooseWord();
 	hangmandata.Word = createWord(hangmandata.ToFind);
 	hangmandata.Attempts = 0
+	hangmandata.CountMax = 7
+	hangmandata.CountMin = 0
 
 	fmt.Println("Good Luck, you have 10 attempts.")
 	for {
-		var goodLetter bool
-		hangmandata.Word, goodLetter = checkLetter(askLetter(hangmandata.Word), hangmandata.Word, hangmandata.ToFind)
-		if !goodLetter {
-			hangmandata.Attempts++
+		goodLetter := 1
+		hangmandata.Word, goodLetter = checkLetter(askLetter(hangmandata.Word, hangmandata), hangmandata.Word, hangmandata.ToFind, hangmandata)
+		if goodLetter != 0 {
+			printHangmanFile(hangmandata)
+			hangmandata.Attempts += goodLetter
+			hangmandata.CountMax += 8
+			hangmandata.CountMin += 8
 		}
 		if hangmandata.Word == hangmandata.ToFind {
+			win(hangmandata.ToFind)
 			break
 		}
 		if hangmandata.Attempts >= 10 {
-			loose()
+			loose(hangmandata.ToFind)
+			break
 		}
+		fmt.Println("\nGood Luck, you have:", 10-hangmandata.Attempts, "attemps left.")
 	}
-	fmt.Println("The word was " + hangmandata.ToFind)
-	win()
 }
 
 func chooseWord() string { // Function to select word needed to find in a special file
@@ -112,7 +120,7 @@ func createWord(word string) string { // Function to create the word we display
 	return word
 }
 
-func askLetter(word string) string {
+func askLetter(word string, hangmandata *HangManData) string {
 	reader := bufio.NewReader(os.Stdin)
 	for _, j := range word {
 		fmt.Print(string(j) + " ")
@@ -121,41 +129,103 @@ func askLetter(word string) string {
 	fmt.Print("Choose: ")
 	letter, _ := reader.ReadString('\n')
 	for {
-		if len(letter) != 3 {
-			fmt.Println("You need to choose a letter, not a word")
+		if letter >= "a" && letter <= "z" || len(letter) > 2 {
+			break
+		} else {
+			fmt.Println("\nThis character is not allowed. Try again !\n")
 			fmt.Print("Choose: ")
 			letter, _ = reader.ReadString('\n')
-		} else {
-			break
 		}
 	}
 	return letter
 }
 
-func checkLetter(letter string, word string, tofind string)(string, bool) {
-	var newWord string
-	var goodLetter bool
-
-	for i, j := range word {
-		if string(tofind[i]) == string(letter[0]) && string(j) != letter {
-			newWord += string(letter[0])
-			goodLetter = true
-		} else {
-			newWord += string(j)
+func askWord(letters string, word string, tofind string) string {
+	var newletters string
+	for _, j := range letters {
+		letters = ""
+		if string(j) != " " {
+			newletters += string(j)
 		}
+	}
+	if newletters == tofind + "\n" {
+		win(tofind)
+		os.Exit(0)
+	}
+	return word
+}
+
+func checkLetter(letter string, word string, tofind string, hangmandata *HangManData)(string, int) {
+	var newWord string
+	goodLetter := 1
+
+	if len(letter) > 2 {
+		return askWord(letter, word, tofind), 2
+	} else {
+		for i, j := range word {
+			if string(tofind[i]) == string(letter[0]) && string(j) != letter {
+				newWord += string(letter[0])
+				goodLetter = 0
+			} else {
+				newWord += string(j)
+			}
+		}
+	}
+	for _, j := range hangmandata.UsedLetters {
+		if letter == j {
+			goodLetter = 0
+			break
+		}
+	}
+	if len(letter) == 2 {
+		usedLetters(hangmandata, letter)	
 	}
 	return newWord, goodLetter
 }
 
-func win() {
-	fmt.Println("\n-------------------------------")
-	fmt.Println("            YOU WIN            ")
-	fmt.Println("-------------------------------\n")
+func printHangmanFile(hangmandata *HangManData) {
+	file, err := os.Open("files/hangman.txt")
+	if err != nil {
+		os.Exit(0)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var line int
+	fmt.Println("\n")
+	for scanner.Scan() {
+		if line >= hangmandata.CountMin && line <= hangmandata.CountMax {
+			fmt.Println(scanner.Text())
+		}
+		line++
+	}
 }
 
-func loose() {
-	fmt.Println("\n-------------------------------")
-	fmt.Println("           YOU LOOSE           ")
-	fmt.Println("-------------------------------\n")
-	os.Exit(0)
+func usedLetters(hangmandata *HangManData, letter string) {
+	var count bool
+	for _, i := range hangmandata.UsedLetters {
+		if i == letter {
+			count = true
+		}
+	}
+	if !count {
+		hangmandata.UsedLetters[hangmandata.Attempts] = letter
+	} else {
+		fmt.Println("You've already use this letter")
+	}
+	for _, j := range hangmandata.UsedLetters {
+		if j >= "a" && j <= "z" {
+			fmt.Println(j + "/")
+		}
+	}
+}
+
+func win(tofind string) {
+	fmt.Println("\nThe word was " + tofind)
+	fmt.Println("\n           - CONGRATS !            \n")
+}
+
+func loose(tofind string) {
+	fmt.Println("\nThe word was " + tofind)
+	fmt.Println("\n           - TRY AGAIN !            \n")
 }
