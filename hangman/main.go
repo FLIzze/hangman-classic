@@ -238,6 +238,7 @@ func usedLetters(hangmandata *HangManData, letter string) { //Print an array of 
 
 	for _, i := range hangmandata.UsedLetters {
 		if i == letter {
+			fmt.Println("You've already used this letter!")
 			count = true
 		}
 	}
@@ -262,8 +263,10 @@ func usedLetters(hangmandata *HangManData, letter string) { //Print an array of 
 			}
 		}
 	}
-	if count == true || count2 == true {
-		fmt.Println("You've already used this letter!")
+	for _, i := range hangmandata.HiddenUsedLetters {
+		if i == letter {
+			fmt.Print("You've already used this letter!")
+		}
 	}
 	if !count {
 		hangmandata.UsedLetters[hangmandata.Attempts] = letter

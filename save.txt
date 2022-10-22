@@ -1,1 +1,1 @@
-{"Word":"le_t__e","ToFind":"lecture","Attempts":3,"CountMin":24,"CountMax":31,"UsedLetters":["t","x","t","t","t","t","t","t","t","t","t","t","t","t","t","t","t","k","t","l","t","l","e","t","e","a"]}
+{"Word":"exter_e_r","ToFind":"exterieur","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["a","l","","","","","","","",""],"HiddenUsedLetters":["x","r","e"]}
