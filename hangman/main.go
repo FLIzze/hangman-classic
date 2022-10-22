@@ -159,7 +159,7 @@ func askLetter(word string, hangmandata *HangManData) string {
 	return letter
 }
 
-func askWord(letters string, word string, tofind string) string {
+func askWord(letters string, word string, tofind string, hangmandata *HangManData) string {
 	var newletters string
 	for _, j := range letters {
 		letters = ""
@@ -167,9 +167,12 @@ func askWord(letters string, word string, tofind string) string {
 			newletters += string(j)
 		}
 	}
-	if newletters == tofind+"\n" {
+	if newletters == tofind {
 		win(tofind)
 		os.Exit(0)
+	} else {
+		hangmandata.CountMax += 8
+		hangmandata.CountMin += 8
 	}
 	return word
 }
@@ -179,7 +182,7 @@ func checkLetter(letter string, word string, tofind string, hangmandata *HangMan
 	goodLetter := 1
 
 	if len(letter) > 1 {
-		return askWord(letter, word, tofind), 2
+		return askWord(letter, word, tofind, hangmandata), 2
 	} else {
 		for i, j := range word {
 			if string(tofind[i]) == string(letter[0]) && string(j) != letter {
