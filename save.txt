@@ -1,1 +1,1 @@
-{"Word":"exter_e_r","ToFind":"exterieur","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["a","l","","","","","","","",""],"HiddenUsedLetters":["x","r","e"]}
+{"Word":"d___ier","ToFind":"dossier","Attempts":7,"CountMin":56,"CountMax":63,"UsedLetters":["k","l","n","m","a","w","q","","",""],"HiddenUsedLetters":["i","d"]}
