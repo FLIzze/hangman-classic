@@ -11,19 +11,19 @@ import (
 )
 
 type HangManData struct {
-	Word        string     // Word composed of '_', ex: H_ll_
-	ToFind      string     // Final word chosen by the program at the beginning. It is the word to find
-	Attempts    int        // Number of attempts left
-	CountMin    int        // Line where we'll print the hangman in hangman.txt.
-	CountMax    int        // Same thing.
-	UsedLetters [10]string //Letters we already used.
+	Word              string     // Word composed of '_', ex: H_ll_
+	ToFind            string     // Final word chosen by the program at the beginning. It is the word to find
+	Attempts          int        // Number of attempts left
+	CountMin          int        // Line where we'll print the hangman in hangman.txt.
+	CountMax          int        // Same thing.
+	UsedLetters       [10]string //Letters we already used.
+	HiddenUsedLetters []string   //Letters we already used yet we dont want to display.
 }
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	hangmandata := &HangManData{}
-
 	args := os.Args[1:]
 
 	if args[0] == "--startWith" {
@@ -43,6 +43,7 @@ func main() {
 	for {
 		goodLetter := 1
 		hangmandata.Word, goodLetter = checkLetter(askLetter(hangmandata.Word, hangmandata), hangmandata.Word, hangmandata.ToFind, hangmandata)
+
 		if goodLetter != 0 {
 			printHangmanFile(hangmandata)
 			hangmandata.Attempts += goodLetter
@@ -133,6 +134,7 @@ func createWord(word string) string { // Function to create the word we display
 
 func askLetter(word string, hangmandata *HangManData) string {
 	var letter string
+
 	for _, j := range word {
 		fmt.Print(string(j) + " ")
 	}
@@ -161,6 +163,7 @@ func askLetter(word string, hangmandata *HangManData) string {
 
 func askWord(letters string, word string, tofind string, hangmandata *HangManData) string {
 	var newletters string
+
 	for _, j := range letters {
 		letters = ""
 		if string(j) != " " {
@@ -199,6 +202,12 @@ func checkLetter(letter string, word string, tofind string, hangmandata *HangMan
 			break
 		}
 	}
+	for _, j := range hangmandata.HiddenUsedLetters {
+		if letter == j {
+			goodLetter = 0
+			break
+		}
+	}
 	if len(letter) == 1 {
 		usedLetters(hangmandata, letter)
 	}
@@ -225,21 +234,49 @@ func printHangmanFile(hangmandata *HangManData) { //Print the current state of t
 
 func usedLetters(hangmandata *HangManData, letter string) { //Print an array of letters we've used
 	var count bool
+	var count2 bool
+
 	for _, i := range hangmandata.UsedLetters {
 		if i == letter {
 			count = true
 		}
 	}
+	for _, i := range hangmandata.ToFind {
+		if string(i) == letter {
+			count = true
+		}
+	}
+	for _, i := range hangmandata.Word {
+		if letter == string(i) {
+			for _, j := range hangmandata.HiddenUsedLetters {
+				if letter == j {
+					count2 = true
+				}
+			}
+			if count2 == false {
+				hangmandata.HiddenUsedLetters = append(hangmandata.HiddenUsedLetters, letter)
+				hangmandata.Attempts--
+				hangmandata.CountMax -= 8
+				hangmandata.CountMin -= 8
+				break
+			}
+		}
+	}
+	if count == true || count2 == true {
+		fmt.Println("You've already used this letter!")
+	}
 	if !count {
 		hangmandata.UsedLetters[hangmandata.Attempts] = letter
 	}
-	fmt.Println(" ___")
-	for _, j := range hangmandata.UsedLetters {
-		if j >= "a" && j <= "z" {
-			fmt.Println("|", j, "|")
+	if hangmandata.UsedLetters[0] != "" {
+		fmt.Println(" ___")
+		for _, j := range hangmandata.UsedLetters {
+			if j >= "a" && j <= "z" {
+				fmt.Println("|", j, "|")
+			}
 		}
+		fmt.Println(" ---")
 	}
-	fmt.Println(" ---")
 }
 
 func win(tofind string) {

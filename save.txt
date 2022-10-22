@@ -1,1 +1,1 @@
-{"Word":"m______","ToFind":"matelas","Attempts":0,"CountMin":0,"CountMax":7,"UsedLetters":["","","","","","","","","",""]}
+{"Word":"le_t__e","ToFind":"lecture","Attempts":3,"CountMin":24,"CountMax":31,"UsedLetters":["t","x","t","t","t","t","t","t","t","t","t","t","t","t","t","t","t","k","t","l","t","l","e","t","e","a"]}
