@@ -1,0 +1,1 @@
+{"Word":"__uss_","ToFind":"mousse","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["","","","","","","","","",""]}

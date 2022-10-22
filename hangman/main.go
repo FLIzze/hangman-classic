@@ -1,21 +1,22 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-	"bufio"
 	"os"
 	"time"
 )
 
 type HangManData struct {
-	Word             string // Word composed of '_', ex: H_ll_
-	ToFind           string // Final word chosen by the program at the beginning. It is the word to find
-	Attempts         int // Number of attempts left
-	CountMin    	 int
-	CountMax    	 int
-	UsedLetters 	 [10]string
+	Word        string // Word composed of '_', ex: H_ll_
+	ToFind      string // Final word chosen by the program at the beginning. It is the word to find
+	Attempts    int    // Number of attempts left
+	CountMin    int
+	CountMax    int
+	UsedLetters [10]string
 }
 
 func main() {
@@ -23,13 +24,20 @@ func main() {
 
 	hangmandata := &HangManData{}
 
-	hangmandata.ToFind = chooseWord();
-	hangmandata.Word = createWord(hangmandata.ToFind);
-	hangmandata.Attempts = 0
-	hangmandata.CountMax = 7
-	hangmandata.CountMin = 0
+	args := os.Args[1:]
 
-	fmt.Println("Good Luck, you have 10 attempts.")
+	if args[0] == "--startWith" {
+		getSaveFile(hangmandata, args[1])
+		fmt.Println("Welcome back you have", 10-hangmandata.Attempts, "attempts.")
+	} else {
+		hangmandata.ToFind = chooseWord(hangmandata)
+		hangmandata.Word = createWord(hangmandata.ToFind)
+		hangmandata.Attempts = 0
+		hangmandata.CountMax = 7
+		hangmandata.CountMin = 0
+		fmt.Println("Good Luck, you have", 10-hangmandata.Attempts, "attempts.")
+	}
+
 	for {
 		goodLetter := 1
 		hangmandata.Word, goodLetter = checkLetter(askLetter(hangmandata.Word, hangmandata), hangmandata.Word, hangmandata.ToFind, hangmandata)
@@ -51,9 +59,9 @@ func main() {
 	}
 }
 
-func chooseWord() string { // Function to select word needed to find in a special file
+func chooseWord(hangmandata *HangManData) string { // Function to select word needed to find in a special file
 	args := os.Args[1:]
-	
+
 	if len(args) != 1 {
 		fmt.Println("/!\\ You need to select a file...")
 		os.Exit(0)
@@ -62,7 +70,7 @@ func chooseWord() string { // Function to select word needed to find in a specia
 	content, _ := ioutil.ReadFile(args[0])
 
 	var words []string
-	var word string 
+	var word string
 
 	for _, i := range content {
 		if i == 10 {
@@ -86,7 +94,7 @@ func createWord(word string) string { // Function to create the word we display
 
 	var checkreveal bool
 
-	for i := (len(word) / 2 - 1); i >= 0; i-- {
+	for i := (len(word)/2 - 1); i >= 0; i-- {
 		rdm := rand.Intn(len(secretword) - 1)
 		for _, j := range secretword {
 			if words[rdm] == j {
@@ -108,7 +116,7 @@ func createWord(word string) string { // Function to create the word we display
 					}
 				}
 			}
-		} 
+		}
 	}
 
 	word = ""
@@ -121,20 +129,28 @@ func createWord(word string) string { // Function to create the word we display
 }
 
 func askLetter(word string, hangmandata *HangManData) string {
-	reader := bufio.NewReader(os.Stdin)
+	var letter string
 	for _, j := range word {
 		fmt.Print(string(j) + " ")
 	}
-	fmt.Println("\n")
+	fmt.Println('\n')
 	fmt.Print("Choose: ")
-	letter, _ := reader.ReadString('\n')
+	fmt.Scanln(&letter)
+	if letter == "STOP" {
+		saveFile(hangmandata)
+		os.Exit(0)
+	}
 	for {
 		if letter >= "a" && letter <= "z" || len(letter) > 2 {
 			break
 		} else {
 			fmt.Println("\nThis character is not allowed. Try again !\n")
 			fmt.Print("Choose: ")
-			letter, _ = reader.ReadString('\n')
+			fmt.Scanln(&letter)
+			if letter == "STOP" {
+				saveFile(hangmandata)
+				os.Exit(0)
+			}
 		}
 	}
 	return letter
@@ -148,14 +164,14 @@ func askWord(letters string, word string, tofind string) string {
 			newletters += string(j)
 		}
 	}
-	if newletters == tofind + "\n" {
+	if newletters == tofind+"\n" {
 		win(tofind)
 		os.Exit(0)
 	}
 	return word
 }
 
-func checkLetter(letter string, word string, tofind string, hangmandata *HangManData)(string, int) {
+func checkLetter(letter string, word string, tofind string, hangmandata *HangManData) (string, int) {
 	var newWord string
 	goodLetter := 1
 
@@ -178,7 +194,7 @@ func checkLetter(letter string, word string, tofind string, hangmandata *HangMan
 		}
 	}
 	if len(letter) == 2 {
-		usedLetters(hangmandata, letter)	
+		usedLetters(hangmandata, letter)
 	}
 	return newWord, goodLetter
 }
@@ -186,13 +202,13 @@ func checkLetter(letter string, word string, tofind string, hangmandata *HangMan
 func printHangmanFile(hangmandata *HangManData) {
 	file, err := os.Open("files/hangman.txt")
 	if err != nil {
-		os.Exit(0)
+		fmt.Print(err)
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	var line int
-	fmt.Println("\n")
+	fmt.Println('\n')
 	for scanner.Scan() {
 		if line >= hangmandata.CountMin && line <= hangmandata.CountMax {
 			fmt.Println(scanner.Text())
@@ -210,8 +226,6 @@ func usedLetters(hangmandata *HangManData, letter string) {
 	}
 	if !count {
 		hangmandata.UsedLetters[hangmandata.Attempts] = letter
-	} else {
-		fmt.Println("You've already use this letter")
 	}
 	for _, j := range hangmandata.UsedLetters {
 		if j >= "a" && j <= "z" {
@@ -228,4 +242,21 @@ func win(tofind string) {
 func loose(tofind string) {
 	fmt.Println("\nThe word was " + tofind)
 	fmt.Println("\n           - TRY AGAIN !            \n")
+}
+
+func saveFile(hangmandata *HangManData) {
+	content, _ := json.Marshal(hangmandata)
+	err := ioutil.WriteFile("save.txt", content, 0777)
+	if err != nil {
+		fmt.Print(err)
+	}
+	fmt.Print("Game saved in save.txt.")
+}
+
+func getSaveFile(hangmandata *HangManData, save string) {
+	content, err := ioutil.ReadFile(save)
+	if err != nil {
+		fmt.Print(err)
+	}
+	json.Unmarshal(content, hangmandata)
 }
