@@ -1,1 +1,1 @@
-{"Word":"__uss_","ToFind":"mousse","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["","","","","","","","","",""]}
+{"Word":"es____e_","ToFind":"escalier","Attempts":0,"CountMin":0,"CountMax":7,"UsedLetters":["","","","","","","","","",""]}
