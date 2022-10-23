@@ -270,6 +270,7 @@ func usedLetters(hangmandata *HangManData, letter string) { //Print an array of 
 	}
 	if !count {
 		hangmandata.UsedLetters[hangmandata.Attempts] = letter
+		fmt.Println("This letter is not in the word.")
 	}
 	if hangmandata.UsedLetters[0] != "" {
 		fmt.Println(" ___")
