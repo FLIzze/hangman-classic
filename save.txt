@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"Word":"_x_______","ToFind":"exterieur","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["l","k","","","","","","","",""],"HiddenUsedLetters":null}
+=======
+{"Word":"d___ier","ToFind":"dossier","Attempts":7,"CountMin":56,"CountMax":63,"UsedLetters":["k","l","n","m","a","w","q","","",""],"HiddenUsedLetters":["i","d"]}
+>>>>>>> d8608151eefa9acb6a3304d561ab9a2f63d60d1a
