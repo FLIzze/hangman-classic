@@ -1,6 +1,6 @@
 # Hangman-game
 
-![english🇬🇧]https://ytrack.learn.ynov.com/git/fmael/hangman-classic/src/branch/master/README.md
+![english🇬🇧](https://ytrack.learn.ynov.com/git/fmael/hangman-classic/src/branch/master/README.md)
 
 ## Qu'est-ce que c'est?
 
