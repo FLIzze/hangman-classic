@@ -21,7 +21,8 @@ Just copy and paste the following commands in your terminal
 ##to download the game
 git clone https://ytrack.learn.ynov.com/git/fmael/hangman-classic.git
 ##to start a brand new game 
-go run main.go files/words1.txt
+cd hangman-classic
+go run hangman/main.go files/words1.txt
 ##to start from a save
 hangman/main.go --startWith save.txt
 ```
