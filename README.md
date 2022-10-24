@@ -1,5 +1,7 @@
 # Hangman-game
 
+![français🇫🇷](https://ytrack.learn.ynov.com/git/fmael/hangman-classic/src/branch/master/READMEfr.md)
+
 ## What is it?
 
 This project is based on the famous HangMan Game.
