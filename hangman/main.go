@@ -81,7 +81,9 @@ func chooseWord(hangmandata *HangManData) string { // Function to select word ne
 			words = append(words, word)
 			word = ""
 		} else {
-			word = word + string(i)
+			if i != '\r' {
+				word = word + string(i)
+			}
 		}
 	}
 	return words[rand.Intn(len(words))]
@@ -265,7 +267,7 @@ func usedLetters(hangmandata *HangManData, letter string) { //Print an array of 
 	}
 	for _, i := range hangmandata.HiddenUsedLetters {
 		if i == letter {
-			fmt.Print("You've already used this letter!")
+			fmt.Println("You've already used this letter!")
 		}
 	}
 	if !count {

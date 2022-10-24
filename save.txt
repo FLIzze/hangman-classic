@@ -1,1 +1,1 @@
-{"Word":"exter_e_r","ToFind":"exterieur","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["a","l","","","","","","","",""],"HiddenUsedLetters":["x","r","e"]}
+{"Word":"_x_______","ToFind":"exterieur","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["l","k","","","","","","","",""],"HiddenUsedLetters":null}
