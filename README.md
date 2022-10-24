@@ -19,8 +19,8 @@ This HangMan Game contains all the basic features of the classic games, and some
 Just copy and paste the following commands in your terminal
 ```shell
 ##to download the game
-git clone github.com/FLIzze/hangman-game 
-##to start a brand new game
+git clone https://ytrack.learn.ynov.com/git/fmael/hangman-classic.git
+##to start a brand new game 
 go run main.go files/words1.txt
 ##to start from a save
 hangman/main.go --startWith save.txt
