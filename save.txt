@@ -1,1 +1,0 @@
-{"Word":"_u_e_u","ToFind":"bureau","Attempts":2,"CountMin":16,"CountMax":23,"UsedLetters":["l","q","","","","","","","",""],"HiddenUsedLetters":null}
