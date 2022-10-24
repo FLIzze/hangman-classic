@@ -22,9 +22,9 @@ Just copy and paste the following commands in your terminal
 git clone https://ytrack.learn.ynov.com/git/fmael/hangman-classic.git
 ##to start a brand new game 
 cd hangman-classic
-go run hangman/main.go files/words1.txt
+go run hangman/main.go files/words.txt
 ##to start from a save
-hangman/main.go --startWith save.txt
+go run hangman/main.go --startWith save.txt
 ```
 
 ## What does it look like?
